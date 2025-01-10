@@ -45,14 +45,14 @@ public class FlorirJardi {
 		return valor;
 
 	}
-	
-	 private static int sembrarJardi(Estat jardi[][]) {
-		 int valor;
-		
-		 Random aleatori = new Random ();
-		 
-		 for (int i = 0; i<jardi.length;i++) {
-			 for (int j = 0; j<jardi[0].length;j++) {
+
+	private static int sembrarJardi(Estat jardi[][]) {
+		int valor;
+
+		Random aleatori = new Random ();
+
+		for (int i = 0; i<jardi.length;i++) {
+			for (int j = 0; j<jardi[0].length;j++) {
 				valor = aleatori.nextInt(1,4);
 				if (valor == 1) {
 					jardi [i][j] = Estat.Sembrat;
@@ -64,8 +64,27 @@ public class FlorirJardi {
 					jardi [i][j] = Estat.Florit;
 				}
 			}
-		 }
-		 return jardi;
-	 }
+		}
+		return jardi;
+	}
+
+	private static void canviarEstat(Estat[][]jardi, int fila, int col) {
+
+	}
+
+
+	private static boolean acabar(Estat[][]taulell) {
+		for (int i = 0; i<taulell.length;i++) {
+			for (int j = 0; j<taulell[0].length;j++) {
+				if (taulell [i][j]!= Estat.Florit) {
+					return false;
+				}
+			}
+		} 
+		return true;
+	}
+
 
 }
+
+
