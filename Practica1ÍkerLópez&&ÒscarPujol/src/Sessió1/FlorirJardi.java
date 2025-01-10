@@ -83,6 +83,21 @@ public class FlorirJardi {
 		} 
 		return true;
 	}
+	
+	private static int regar(Estat[][]taulell, int fil, int col, int florides) {
+		 
+	 }
+
+	private static void visualitza(Estat[][] t, JConsole console) {
+		for (int i = 0; i<t.length;i++) {
+			for (int j = 0; j<t[0].length;j++) {
+			
+			console.print(t[i][j]);
+			
+			}
+			console.println();
+		}
+	}
 
 
 }
