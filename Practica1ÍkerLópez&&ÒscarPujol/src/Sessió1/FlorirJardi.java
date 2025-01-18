@@ -9,22 +9,48 @@ public class FlorirJardi {
 	enum Estat { Sembrat, Nascut, Florit }
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		JConsole console = new JConsole (160,40);
 
-		int fila, columna;
+		int fila, columna, florides, contadorIntents = 30;
 
-		String textFila, textColumna, textRegarFila, textRegarColumna;
+		String textFila, textColumna;
 
 		textFila= "Indica quantes files té el taulell: ";
 		textColumna= "Indica quantes columnes té el taulell: ";
-		textRegarFila = "Indica la fila de la component a regar ";
-		textRegarColumna = "Indica la columna de la component a regar ";
 
 		fila = llegirValor(3, 10, textFila, console);
 		columna = llegirValor(3, 10, textColumna, console);
 
 		Estat jardi [][] = new Estat [fila][columna];
+		
+		
+		
+		console.println("Comença el joc. Aniràs indicant les components que vols regar");
+		console.println("-------------------------------------------------------------");
+		
+		int[] intents = new int[contadorIntents];
+		
+		for(int i = 0; !acabar(jardi) ; i++) {
+			console.println("Indica la fila de la component a regar");
+			int fila = console.readInt();
+			console.println("Indica la columna de la component a regar");
+			int columna = console.readInt();
+				visualitza(jardi, console);
+				florides = sembrarJardi(jardi);
+				canviarEstat(jardi, fila, columna, console);
+				regar(jardi, fila, columna, florides);
+			console.println("El reg de la component("+fila+","+columna+") provoca els següents canvis al jardí");
+			intents[i] = florides;
+        }
+		
+		
+		
+		
+		console.println("Guanyat!");
+		console.println("Dades finals:");
+		for(int i=0; i<intents.length; i++) {
+			console.println("El reg número "+i+1+"té "+intents[i]+"flors");
+		}
 
 	}
 
@@ -48,6 +74,7 @@ public class FlorirJardi {
 
 	private static int sembrarJardi(Estat jardi[][]) {
 		int valor;
+		int florides = 0;
 
 		Random aleatori = new Random ();
 
@@ -62,14 +89,26 @@ public class FlorirJardi {
 				}
 				else if (valor == 3) {
 					jardi [i][j] = Estat.Florit;
+					florides++;
 				}
 			}
 		}
-		return jardi;
+		return florides;
 	}
 
-	private static void canviarEstat(Estat[][]jardi, int fila, int col) {
-
+	private static void canviarEstat(Estat[][]jardi, int fila, int col, JConsole console) {
+		
+				if(jardi[fila][col]== Estat.Sembrat) {
+					jardi [fila][col] = Estat.Nascut;
+				} 
+				
+				else if(jardi[fila][col] == Estat.Nascut) {
+					jardi [fila][col] = Estat.Florit;
+				} 
+				
+				else if(jardi[fila][col] == Estat.Florit){
+					jardi [fila][col] = Estat.Sembrat;
+				}
 	}
 
 
@@ -85,14 +124,31 @@ public class FlorirJardi {
 	}
 
 	private static int regar(Estat[][]taulell, int fil, int col, int florides) {
-
+		int contadorFlorit = 0;
+		
+		for (int i = 0; i<taulell.length;i++) {
+			for (int j = 0; j<taulell[0].length;j++) {
+				if(i==fil || j == col) {
+					canviarEstat(taulell, i, j, console);
+				}
+			}
+		} 
+		for (int i = 0; i<taulell.length;i++) {
+			for (int j = 0; j<taulell[0].length;j++) {
+				if(taulell[i][j] == Estat.Florit) {
+					contadorFlorit++;
+				}
+			}
+		}
+		
+		return contadorFlorit;
 	}
 
 	private static void visualitza(Estat[][] t, JConsole console) {
 		for (int i = 0; i<t.length;i++) {
 			for (int j = 0; j<t[0].length;j++) {
 
-				console.print(t[i][j]);
+				console.print(t[i][j]+"\t");
 
 			}
 			console.println();
