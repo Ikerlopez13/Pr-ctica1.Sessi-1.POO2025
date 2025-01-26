@@ -14,7 +14,6 @@ public class FlorirJardi {
 
 		int fila, columna, contRegs=0;
 		int filaReg, columnaReg;
-		int vecFlors [] = new int [contRegs];
 		int florides=0, menysFlors;
 
 		String textFila, textColumna, textRegarFila, textRegarColumna;
@@ -26,18 +25,12 @@ public class FlorirJardi {
 
 		fila = llegirValor(3, 10, textFila, console);
 		columna = llegirValor(3, 10, textColumna, console);
+		
+		Estat jardiMinim [][] = new Estat [fila][columna];
 
 		Estat jardi [][] = new Estat [fila][columna];
 		
-		sembrarJardi(jardi);
-		for (int i = 0; i<jardi.length;i++) {
-			for (int j = 0; j<jardi[0].length;j++) {
-				if (jardi[i][j]== Estat.Florit) {
-					florides++;
-				}
-			}
-		}
-		console.println();
+		florides = sembrarJardi(jardi);
 		visualitza(jardi, console);
 		
 		console.println();
@@ -45,30 +38,20 @@ public class FlorirJardi {
 		console.print("Conmença el joc. Àniras indicant les components que cols regar");
 		console.print("--------------------------------------------------------------");
 		
-		while (acabar(jardi)== false) {
-		filaReg = llegirValorRegFilas(fila, textRegarFila, console);
-		columnaReg = llegirValorRegColumnas(columna, textRegarColumna, console);
-		regar (jardi, filaReg, columnaReg, florides, console);
+		int vecFlors [] = new int [fila*columna];
+		
+		while (!acabar(jardi)) {
+		filaReg = llegirValor(3,10 , textRegarFila, console);
+		columnaReg = llegirValor(3,10, textRegarColumna, console);
+		florides = regar (jardi, filaReg, columnaReg, florides, console);
+		console.println("El reg de la component (" + filaReg + "," + columnaReg + ") provoca el següents canvis al jardí)");
 		visualitza(jardi, console);
 		contRegs++;
 		}
 		
 		console.println("Guanyat!!!!!");
 		console.println("Dades finals");
-		
-		for (int i=0,cont=1; i<vecFlors.length; i++, cont++) {
-			console.print("El reg número" + cont + "té" + vecFlors[i] + "flors");
-		}
-			
-		for (int h=0; h<vecFlors.length; h++) {
-			vecFlors[0] = menysFlors;
-			if (menysFlors>vecFlors[h]) {
-				menysFlors = vecFlors[h];
-			}
-			
-		}
-		
-		console.println("La regada que ha produït menys flors ha sigut la Nº" + menysFlors );
+	
 	}
 
 	private static int llegirValor(int minim, int maxim, String text, JConsole console) {
@@ -77,7 +60,7 @@ public class FlorirJardi {
 
 		console.setForegroundColor(Color.GREEN);
 		valor = console.readInt();
-		while (valor<3 || valor>10) {
+		while (valor<minim && valor>maxim) {
 			console.setForegroundColor(Color.RED);
 			console.print("El valor entrat està fora de l'interval (ha d'estar entre 3 i 10)");
 			console.println();
@@ -90,9 +73,10 @@ public class FlorirJardi {
 	}
 
 	private static int sembrarJardi(Estat jardi[][]) {
-		int valor;
+		int valor, florides=0;
 
 		Random aleatori = new Random ();
+		
 
 		for (int i = 0; i<jardi.length;i++) {
 			for (int j = 0; j<jardi[0].length;j++) {
@@ -105,10 +89,31 @@ public class FlorirJardi {
 				}
 				else if (valor == 3) {
 					jardi [i][j] = Estat.Florit;
+					florides++;
+				}
+			}
+			
+			while (florides == jardi.length*jardi[0].length) {
+				florides =0;
+				
+				for (i = 0; i<jardi.length; i++) {
+					for (int j = 0; j<jardi[0].length;j++) {
+						valor = aleatori.nextInt(1,4);
+						if (valor == 1) {
+							jardi [i][j] = Estat.Sembrat;
+						}
+						else if (valor == 2) {
+							jardi [i][j] = Estat.Nascut;
+						}
+						else if (valor == 3) {
+							jardi [i][j] = Estat.Florit;
+							florides++;
+					}
 				}
 			}
 		}
-		return jardi;
+	}
+		return florides;	// TO DO
 	}
 
 	private static void canviarEstat(Estat[][]jardi, int fila, int col, JConsole console) {
@@ -142,19 +147,23 @@ public class FlorirJardi {
 		
 		console.println("El reg de la component (" + fil + "," + col + " ) provoca el següents canvis al jardí");
 		
-		int contF=0;
+		int contF=florides;
+		
+	    if (fil < 0 || fil >= taulell.length || col < 0 || col >= taulell[0].length) {
+	        return florides;
+	    }
 		
 		for (int j =0 ;j<taulell[0].length;j++) {
-				canviarEstat(taulell, fil, col, console);
+				canviarEstat(taulell, fil, j, console);
 			}
 			
 			for (int i = 0; i<taulell.length; i++) {
-				canviarEstat(taulell, fil, col, console);
+				canviarEstat(taulell, i, col, console);
 			}
 			
-			for (int filas = 0; filas<taulell.length; filas++) {
-				for (int columnas =0 ;columnas<taulell[0].length;columnas++) {
-					if (taulell[filas][columnas] == Estat.Florit) {
+			for (int i = 0; i<taulell.length; i++) {
+				for (int j =0 ; j<taulell[0].length;j++) {
+					if (taulell[i][j] == Estat.Florit) {
 						contF ++;
 					}
 				}
@@ -176,36 +185,12 @@ public class FlorirJardi {
 		}
 	}
 
-	private static int llegirValorRegFilas(int filas, String text, JConsole console) {
-		int valor;
-		console.println(text);
-		console.println();
-		valor = console.readInt();
-		while (valor<0 || valor>filas) {
-			console.setForegroundColor(Color.RED);
-			console.print("El valor entrat està fora del taulell");
-			console.println();
-			valor = console.readInt();
+	private static Estat[][] copiarJardi(Estat[][] jardiMinim , Estat [][] jardi) {
+		for (int i = 0; i < jardi.length; i++) {
+			for (int j = 0; j < jardi[0].length; j++) {
+            jardiMinim[i][j] = jardi[i][j]; 
+			}
 		}
-		console.resetColor();
-		return valor;
-
+    return jardiMinim;
 	}
-	
-	private static int llegirValorRegColumnas(int columnes, String text, JConsole console) {
-		int valor;
-		console.println(text);
-		console.println();
-		valor = console.readInt();
-		while (valor<0 || valor>columnes) {
-			console.setForegroundColor(Color.RED);
-			console.print("El valor entrat està fora del taulell");
-			console.println();
-			valor = console.readInt();
-		}
-		console.resetColor();
-		return valor;
-	}
-
 }
-
