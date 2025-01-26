@@ -14,7 +14,7 @@ public class FlorirJardi {
 
 		int fila, columna, contRegs=0;
 		int filaReg, columnaReg;
-		int florides=0, menysFlors;
+		int florides=0;
 
 		String textFila, textColumna, textRegarFila, textRegarColumna;
 
@@ -39,18 +39,42 @@ public class FlorirJardi {
 		console.print("--------------------------------------------------------------");
 		
 		int vecFlors [] = new int [fila*columna];
-		
+		int i =0; 
 		while (!acabar(jardi)) {
-		filaReg = llegirValor(3,10 , textRegarFila, console);
-		columnaReg = llegirValor(3,10, textRegarColumna, console);
+		filaReg = llegirValor(0, jardi.length-1, textRegarFila, console);
+		columnaReg = llegirValor(0,jardi.length-1, textRegarColumna, console);
 		florides = regar (jardi, filaReg, columnaReg, florides, console);
 		console.println("El reg de la component (" + filaReg + "," + columnaReg + ") provoca el següents canvis al jardí)");
+		if (vecFlors[i]> florides) {
+			jardiMinim = copiarJardi(jardiMinim , jardi);
+		}
+		vecFlors[i] = florides;
+		i++;
 		visualitza(jardi, console);
 		contRegs++;
 		}
 		
+		int numFlors;
 		console.println("Guanyat!!!!!");
 		console.println("Dades finals");
+		int n=1, menysFlors=1;
+		for ( i= 0; i<vecFlors.length; i++, n++) {
+			console.println("El reg número " + n + " té " + vecFlors[i] + " flors ");
+			numFlors = vecFlors[0];
+			if (numFlors >vecFlors[i]) {
+				numFlors = vecFlors[i];
+				menysFlors = n;
+			}
+		}
+		
+		console.println("La regada que ha produït menys flors ha estat la Nº " + menysFlors);
+		
+		console.println("I el jardi tenia aquest estat");
+		visualitza(jardiMinim, console);
+		console.print("Fi joc");
+		
+		
+		
 	
 	}
 
@@ -113,7 +137,7 @@ public class FlorirJardi {
 			}
 		}
 	}
-		return florides;	// TO DO
+		return florides;
 	}
 
 	private static void canviarEstat(Estat[][]jardi, int fila, int col, JConsole console) {
